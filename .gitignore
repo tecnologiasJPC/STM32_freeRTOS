@@ -1,0 +1,50 @@
+# --- Archivos de configuracion personal y de usuario ---
+*.opt
+*.uvopt
+*.uvoptx
+*.uvgui.*
+*.uvguix.*
+*.cdb
+*.dep
+
+# --- Archivos de compilacion y salida (Binarios) ---
+*.axf
+*.bin
+*.hex
+*.elf
+*.lib
+*.o
+*.crf
+*.d
+*.l1p
+*.l2p
+*.obj
+*.sbr
+*.tra
+*.fed
+
+# --- Listados y reportes ---
+*.lst
+*.m51
+*.m66
+*.htm
+*.i
+*.map
+*.plg
+*.scr
+
+# --- Carpetas de salida (comunmente usadas) ---
+/Objects/
+/Listings/
+/DebugConfig/
+/RTE/
+
+# --- Otros archivos temporales ---
+*.bak
+*._ia
+*.__i
+*._ii
+*.ini
+*.sct
+*.sfd
+*.sfr
