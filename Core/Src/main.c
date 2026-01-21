@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include <stdio.h>
+#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -50,6 +52,12 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+osThreadId_t secondaryTaskHandle;
+const osThreadAttr_t secondaryTask_attributes = {
+  .name = "secondaryTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -59,6 +67,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void *argument);
+void SecondaryTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -100,7 +109,9 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+	uint8_t message[] = "Starting MCU...\n";
+	uint8_t siz = sizeof(message);
+	HAL_UART_Transmit(&huart2, (uint8_t*)message, siz, 1000);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -125,7 +136,7 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-
+	secondaryTaskHandle = osThreadNew(SecondaryTask, NULL, &secondaryTask_attributes);
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -282,12 +293,31 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	uint8_t count = 0;
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
+  for(;;){
+		char counting[20];
+		sprintf(counting, "Counting %d \n", count);
+		uint8_t tam = strlen(counting);
+		HAL_UART_Transmit(&huart2, (uint8_t*)counting, tam, 1000);
+    osDelay(1000);
+		if(count>=100){
+			count=0;
+		}
+		else{
+			count++;
+		}
   }
   /* USER CODE END 5 */
+}
+
+void SecondaryTask(void *argument){
+	while(1){
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+		osDelay(500);
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+		osDelay(500);
+	}
 }
 
 /**
